@@ -1,0 +1,53 @@
+#!/bin/sh
+# 커밋 직전 민감 정보 검사. 이 저장소는 공개된다(CLAUDE.md "공개 저장소 규칙").
+# 연결: git config core.hooksPath .githooks
+# 걸리면 커밋이 멈춘다. 고친 뒤 다시 커밋한다.
+
+fail=0
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# 1. 올라가면 안 되는 파일·폴더
+for f in $staged; do
+  case "$f" in
+    .env|.env.*)
+      [ "$f" = ".env.example" ] || { echo "차단: $f (비밀값 파일)"; fail=1; } ;;
+    raw_reviews/*|naming/*|references/*|.notion-cache/*|raw_*/*)
+      echo "차단: $f (저장소 제외 폴더)"; fail=1 ;;
+  esac
+done
+
+# 2. 추가된 줄에서 Notion 토큰 형식 찾기
+added=$(git diff --cached -U0 --diff-filter=ACMR | grep '^+' | grep -v '^+++')
+if printf '%s\n' "$added" | grep -Eq '(ntn_|secret_)[A-Za-z0-9]{20,}'; then
+  echo "차단: Notion 토큰 형식의 문자열이 있습니다"; fail=1
+fi
+
+# 3. .env의 실제 값이 섞였는지 확인(하이픈 있는 DB ID 형태도 검사)
+if [ -f .env ]; then
+  for key in NOTION_TOKEN NOTION_LECTURES_DATABASE_ID; do
+    val=$(grep "^$key=" .env | head -n1 | cut -d= -f2- | tr -d '"'"'"' \r')
+    [ -n "$val" ] || continue
+    plain=$(printf '%s' "$val" | tr -d '-')
+    if printf '%s\n' "$added" | tr -d '-' | grep -Fq "$plain"; then
+      echo "차단: .env의 $key 값이 커밋에 들어 있습니다"; fail=1
+    fi
+  done
+fi
+
+# 4. 공개하지 않는 단어 목록(선택). 한 줄에 하나씩 적고, 이 파일은 커밋하지 않는다.
+deny=.githooks/denylist.local
+if [ -f "$deny" ]; then
+  while IFS= read -r word; do
+    word=$(printf '%s' "$word" | tr -d '\r')
+    case "$word" in ''|'#'*) continue ;; esac
+    if printf '%s\n' "$added" | grep -Fq "$word" || printf '%s\n' "$staged" | grep -Fq "$word"; then
+      echo "차단: 비공개 단어가 들어 있습니다(denylist.local 참고)"; fail=1
+    fi
+  done < "$deny"
+fi
+
+if [ "$fail" -ne 0 ]; then
+  echo "커밋을 멈췄습니다. 위 항목을 고친 뒤 다시 커밋하세요."
+  exit 1
+fi
+exit 0
