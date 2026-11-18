@@ -38,6 +38,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 ```
 /
 ├─ CLAUDE.md          작업 규칙(이 파일)
+├─ README.md          저장소 소개. GitHub 방문자용
 ├─ docs/              기획·가이드 문서. 규칙 파일 외의 문서는 전부 여기
 │  ├─ PRD.md
 │  └─ SEO-GUIDE.md
@@ -85,7 +86,15 @@ npm run preview    빌드 결과 확인
 - Notion 이미지 주소는 만료되므로 빌드 때 내려받아 사이트에 포함한다.
 - 모든 페이지는 공통 레이아웃을 거쳐 title·description·canonical·OG 태그를 받는다.
 - 화면 문구는 한국어, 코드 식별자와 URL 경로는 영어로 쓴다.
-- 새 문서는 `docs/`에 만든다. 루트에는 CLAUDE.md 말고 다른 문서를 두지 않는다. 작명 관련 파일만 `naming/`에 둔다.
+- 새 문서는 `docs/`에 만든다. 루트에는 CLAUDE.md와 README.md 말고 다른 문서를 두지 않는다. 작명 관련 파일만 `naming/`에 둔다.
+- README.md는 GitHub 방문자에게 저장소를 소개하는 문서다. 구조·기술 스택·명령어가 바뀌면 함께 고친다. 공개 저장소 규칙을 똑같이 따른다.
+
+## 커밋 메시지
+
+- Conventional Commits 형식: `type(scope): 설명`. type과 scope는 영어, 설명은 한국어 한 줄.
+- type: feat, fix, docs, style, refactor, test, chore, content(사이트 문구·콘텐츠 파일만 바꾼 경우)
+- scope(선택): notion, layout, home, about, lectures, projects, contact, seo, services, reviews
+- 예: `feat(notion): 공개 강의 이력 필터 추가`, `content(services): 업무 자동화 카드 시간 수정`
 
 ## 공개 저장소 규칙
 
