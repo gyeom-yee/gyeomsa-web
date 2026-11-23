@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "check:dist": "node --env-file=.env scripts/check-dist.ts"
+    "check:dist": "node --env-file-if-exists=.env scripts/check-dist.ts"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.5",

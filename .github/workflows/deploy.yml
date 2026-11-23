@@ -1,0 +1,55 @@
+# GitHub Pages 배포. main에 push하면 배포하고, Notion만 고친 날을 위해 매일 한 번 다시 빌드한다.
+# Notion 값은 저장소 Secrets(NOTION_TOKEN, NOTION_LECTURES_DATABASE_ID)로만 받는다.
+# 공개 저장소라 이 워크플로의 로그도 공개된다. 빌드 로그에 Notion 내부 값을 찍지 않는다.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 19 * * *' # 매일 04:17(한국 시간)
+  workflow_dispatch: # Actions 탭의 "Run workflow" 버튼으로 바로 다시 빌드
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: 빌드
+        run: npm run build
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_LECTURES_DATABASE_ID: ${{ secrets.NOTION_LECTURES_DATABASE_ID }}
+      - name: 공개 검사(걸리면 배포하지 않는다)
+        run: npm run check:dist
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_LECTURES_DATABASE_ID: ${{ secrets.NOTION_LECTURES_DATABASE_ID }}
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

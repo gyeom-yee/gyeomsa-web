@@ -33,7 +33,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 - 글꼴: Pretendard 1.3.9 공식 서브셋 woff2(400·500·600·700·800)를 `src/assets/fonts/pretendard/`에 두고 `global.css`의 `@font-face`로 내려준다. 새 굵기를 쓰면 파일과 `@font-face`를 함께 추가한다. 같은 폴더의 `LICENSE.txt`(SIL OFL)를 지우지 않는다
 - 패키지 매니저: npm
 - 도메인: gyeomsa.com
-- 호스팅: 미정
+- 호스팅: GitHub Pages(2026-11-23 결정). `.github/workflows/deploy.yml`이 빌드 → `check:dist` → 배포를 한다. Notion 토큰·DB ID는 저장소 Secrets에만 둔다. 주소 기준은 `https://gyeomsa.com/`, `www`는 GitHub Pages가 리디렉션한다
 
 ## 폴더 구조
 
@@ -48,6 +48,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 ├─ references/        참고용으로 저장한 외부 사이트. 기획과 무관, 깃 제외
 ├─ raw_reviews/       후기 원본 설문(엑셀). 깃 제외
 ├─ scripts/check-dist.ts  빌드 결과 공개 검사(npm run check:dist)
+├─ .github/workflows/deploy.yml  GitHub Pages 배포(main push·매일 04:17 KST·수동 실행)
 ├─ src/
 │  ├─ site.config.ts  이름·한 줄 소개·이메일·외부 링크. 이 값들은 여기서만 적는다
 │  ├─ content.config.ts  콘텐츠 파일 형식 검사(필수 값)
@@ -77,7 +78,10 @@ npm run check      타입 검사(astro check)
 npm run check:dist 빌드 뒤 dist/에 Notion 내부 값·토큰이 없는지 검사
 ```
 
-배포 명령은 아직 없다. GitHub와 호스팅은 나중에 연결한다.
+배포는 GitHub Actions가 한다. `main`에 push하면 배포되고, Notion만 고친 날을 위해 매일 04:17(한국 시간)에 다시 빌드한다. 바로 반영하려면 `gh workflow run deploy.yml`(또는 Actions 탭의 Run workflow)을 쓴다.
+
+- 공개 저장소라 Actions 로그도 공개된다. 빌드 중 `console.log`·`console.warn`·오류 메시지에 Notion의 `강의명`·`기업명`·`교육기관` 값이나 Notion 응답을 찍지 않는다.
+- `check:dist`가 실패하면 배포하지 않는다. 이 단계를 워크플로에서 빼지 않는다.
 
 ## 코딩 규칙
 
