@@ -49,9 +49,14 @@ const links = [
     font-weight: 800;
     color: var(--ink);
   }
+  /* 푸터 배경(#f4f2ed) 위에서 --muted(#667085)는 대비 4.49:1로 AA(4.5:1)에 못 미친다.
+     푸터의 보조 글자만 조금 진하게 쓴다(5.5:1). */
+  .site-footer {
+    --footer-muted: #596273;
+  }
   .name span {
     font-weight: 500;
-    color: var(--muted);
+    color: var(--footer-muted);
     margin-left: 6px;
   }
   ul {
@@ -80,6 +85,6 @@ const links = [
   .copy {
     margin-top: 24px;
     font-size: 13px;
-    color: var(--muted);
+    color: var(--footer-muted);
   }
 </style>
