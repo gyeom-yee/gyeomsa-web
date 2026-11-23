@@ -94,7 +94,7 @@
 {
   "@context": "https://schema.org",
   "@type": "ProfilePage",
-  "dateModified": "2026-11-10",
+  "dateModified": "2026-11-10T00:00:00+09:00",
   "mainEntity": {
     "@type": "Person",
     "@id": "https://{도메인}/#person",
@@ -123,7 +123,7 @@
 ```
 
 - `sameAs`에는 본인이 운영하고 사이트와 같은 이름·소개를 쓰는 프로필만 넣는다. LinkedIn과 GitHub 계정을 넣기로 정했다(PRD 6장).
-- `dateModified`는 빌드 날짜가 아니라 내용이 실제로 바뀐 날짜를 쓴다.
+- `dateModified`는 빌드 날짜가 아니라 내용이 실제로 바뀐 날짜를 쓴다. Google 프로필 페이지는 날짜와 시간을 요구하므로 `YYYY-MM-DDT00:00:00+09:00`(한국 시간 자정) 형식으로 내보낸다. 설정 파일(`site.config.ts`의 `profileModified`)에는 날짜만 적는다(2026-11-23 결정).
 - `knowsAbout`은 예시다. 홈의 교육 프로그램 카드 주제와 맞춘다.
 - `hasCredential`은 소개 페이지에 보이는 자격 목록(`profile.yaml`의 `certifications`)과 같게 만든다. 자격번호는 넣지 않고, 만료된 자격은 뺀다.
 

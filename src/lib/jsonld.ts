@@ -49,7 +49,8 @@ export function profilePageNode() {
   return {
     '@type': 'ProfilePage',
     url: absUrl('/about/'),
-    dateModified: site.profileModified,
+    // Google ProfilePage는 DateTime을 요구한다. 설정에는 날짜만 적고 여기서 한국 시간 자정을 붙인다.
+    dateModified: `${site.profileModified}T00:00:00+09:00`,
     isPartOf: { '@id': WEBSITE_ID },
     mainEntity: personNode(),
   };
