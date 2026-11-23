@@ -21,6 +21,12 @@ const { title, description, ogType = 'website', breadcrumb, jsonld = [], noindex
 const canonical = absUrl(Astro.url.pathname);
 const nodes = breadcrumb ? [...jsonld, breadcrumbNode(breadcrumb)] : jsonld;
 const ld = nodes.length ? JSON.stringify(toGraph(nodes)).replace(/</g, '\\u003c') : null;
+// 검색엔진 소유 확인 태그. 값은 site.config.ts에만 적는다.
+const verifyTags: [string, string][] = [
+  ['google-site-verification', site.verification.google],
+  ['naver-site-verification', site.verification.naver],
+  ['msvalidate.01', site.verification.bing],
+];
 ---
 
 <!doctype html>
@@ -35,6 +41,7 @@ const ld = nodes.length ? JSON.stringify(toGraph(nodes)).replace(/</g, '\\u003c'
     {!noindex && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {verifyTags.filter(([, v]) => v).map(([name, content]) => <meta name={name} content={content} />)}
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.name} />

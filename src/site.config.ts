@@ -27,6 +27,12 @@ export const site = {
     linkedin: 'https://www.linkedin.com/in/gyeomsa/',
     github: 'https://github.com/gyeom-yee',
   },
+  /** 검색엔진 소유 확인 값(SEO-GUIDE 3장). 공통 레이아웃이 모든 페이지 head에 넣는다. 빈 값이면 태그를 넣지 않는다 */
+  verification: {
+    google: '',
+    naver: '3b8255be4fadc08ceff90e359f46e6d749bcba45',
+    bing: '',
+  },
   /** 홈의 교육 프로그램 카드 주제와 맞춘다(SEO-GUIDE 4.2) */
   knowsAbout: [
     'AI 리터러시',
