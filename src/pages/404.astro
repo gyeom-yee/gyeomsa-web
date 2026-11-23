@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../site.config.ts';
+---
+
+<Base title={`페이지를 찾을 수 없습니다 | ${site.name}`} description="요청한 주소의 페이지가 없습니다." noindex>
+  <div class="wrap page-head box">
+    <h1>페이지를 찾을 수 없습니다</h1>
+    <p class="lead">주소가 바뀌었거나 없는 페이지입니다.</p>
+    <p><a class="btn" href="/">홈으로 가기</a></p>
+  </div>
+</Base>
+
+<style>
+  .box {
+    min-height: 50vh;
+    align-content: center;
+  }
+</style>

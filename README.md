@@ -6,7 +6,7 @@
 
 ## 상태
 
-기획을 마쳤고 구현을 시작하기 전입니다. 요구사항은 [docs/PRD.md](docs/PRD.md), 검색·AI 노출 규칙은 [docs/SEO-GUIDE.md](docs/SEO-GUIDE.md)에 있습니다.
+1차 구현을 마쳤고 배포 전입니다. 호스팅은 아직 정하지 않았습니다. 요구사항은 [docs/PRD.md](docs/PRD.md), 검색·AI 노출 규칙은 [docs/SEO-GUIDE.md](docs/SEO-GUIDE.md)에 있습니다.
 
 ## 구조
 
@@ -20,7 +20,7 @@ flowchart LR
 
 - **Notion을 CMS로 씁니다.** 강의 이력은 Notion에서 관리하고, 빌드 시점에만 Notion API로 읽습니다. 방문자의 브라우저는 Notion을 호출하지 않습니다.
 - **본문은 모두 정적 HTML에 들어 있습니다.** JavaScript가 꺼져 있어도 모든 내용이 보입니다. 숫자가 올라가는 효과 같은 동적 효과는 이미 그려진 HTML 위에만 얹습니다.
-- **나머지 콘텐츠는 저장소의 마크다운·YAML 파일입니다.** 제공 교육, 프로젝트 사례, 고객 후기, 주요 교육 기업 목록이 `src/content/`에 있고, 홈 카드·llms.txt 같은 산출물은 모두 이 파일들에서 만듭니다.
+- **나머지 콘텐츠는 저장소의 마크다운·YAML 파일입니다.** 제공 교육, 프로젝트 경험, 고객 후기, 주요 교육 기업 목록이 `src/content/`에 있고, 홈 카드·llms.txt 같은 산출물은 모두 이 파일들에서 만듭니다.
 - **AI 크롤러를 위한 산출물을 함께 만듭니다.** 페이지마다 title·description·canonical·OG 태그를 넣고, JSON-LD(Person, ProfilePage, WebSite, BreadcrumbList), sitemap, robots.txt, llms.txt를 빌드 때 생성합니다.
 
 ## 공개 저장소에서 개인정보를 지키는 방법
@@ -47,14 +47,13 @@ flowchart LR
 
 ## 기술 스택
 
-- [Astro](https://astro.build/) 정적 출력 + TypeScript(strict)
+- [Astro](https://astro.build/) 7 정적 출력 + TypeScript(strict), `@astrojs/sitemap`
 - Notion API(`@notionhq/client`), 빌드 시점에만 호출
 - 순수 CSS(Astro scoped style). 외부 CSS 프레임워크와 분석·추적 스크립트는 쓰지 않습니다
+- 글꼴: [Pretendard](https://github.com/orioncactus/pretendard) 1.3.9 공식 서브셋 woff2를 저장소에 두고 직접 내려줍니다(SIL OFL 1.1, `src/assets/fonts/pretendard/LICENSE.txt`)
 - 패키지 매니저 npm
 
 ## 시작하기
-
-구현 단계에서 아래 명령을 갖출 예정입니다.
 
 ```bash
 git config core.hooksPath .githooks   # 커밋 검사 연결(복제 후 한 번)
@@ -63,6 +62,7 @@ npm install
 npm run dev       # 개발 서버
 npm run build     # Notion에서 내용을 가져와 dist/ 생성
 npm run preview   # 빌드 결과 확인
+npm run check:dist  # dist/에 Notion 내부 값·토큰이 없는지 검사
 ```
 
 ## 폴더
@@ -70,7 +70,9 @@ npm run preview   # 빌드 결과 확인
 ```
 docs/            기획·가이드 문서
 src/content/     교육·프로젝트·후기·기업 목록 원본
-src/assets/      프로필 사진
-src/lib/notion/  Notion 호출과 공개 필드 필터(예정)
+src/assets/      프로필 사진, 글꼴(Pretendard)
+src/lib/notion/  Notion 호출과 공개 필드 필터
+src/pages/       라우트(홈·소개·강의 이력·문의, llms.txt·robots.txt)
+scripts/         빌드 결과 공개 검사
 .githooks/       커밋 직전 검사
 ```

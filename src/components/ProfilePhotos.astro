@@ -1,0 +1,62 @@
+---
+// 프로필 사진 2장 겹침 구성(PRD F13). 둘 다 CSS 배경이 아니라 <img>로 넣는다.
+import { Image } from 'astro:assets';
+import profile from '../assets/profile.jpg';
+import lecture from '../assets/profile-lecture.jpg';
+
+interface Props {
+  /** 첫 화면이면 대표 사진을 지연 로딩하지 않는다 */
+  eager?: boolean;
+}
+const { eager = false } = Astro.props;
+---
+
+<div class="photos">
+  <Image
+    class="main"
+    src={profile}
+    alt="김윤겸 프로필 사진"
+    widths={[360, 560, 800]}
+    sizes="(max-width: 900px) 70vw, 360px"
+    format="webp"
+    quality={80}
+    loading={eager ? 'eager' : 'lazy'}
+    fetchpriority={eager ? 'high' : 'auto'}
+  />
+  <Image
+    class="sub"
+    src={lecture}
+    alt="강의 중인 김윤겸"
+    widths={[320, 480, 720]}
+    sizes="(max-width: 900px) 60vw, 240px"
+    format="webp"
+    quality={78}
+    loading="lazy"
+  />
+</div>
+
+<style>
+  .photos {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    margin-inline: auto;
+    padding-bottom: 20%;
+  }
+  .photos :global(img) {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    object-fit: cover;
+  }
+  .photos :global(.main) {
+    width: 78%;
+    aspect-ratio: 934 / 1402;
+  }
+  .photos :global(.sub) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 70%;
+    aspect-ratio: 1402 / 934;
+  }
+</style>

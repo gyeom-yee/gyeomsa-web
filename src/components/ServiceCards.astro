@@ -1,0 +1,173 @@
+---
+// 주요 교육 프로그램 카드(PRD 3장 홈). 내용은 src/content/services/에서만 가져온다.
+// 진행 경험 태그는 courses와 일치하는 강의 이력의 공개기업명이다. clients.yaml과 섞지 않는다.
+import { getServices } from '../lib/content.ts';
+import { getOrgsForCourses } from '../lib/notion/index.ts';
+
+const services = await getServices();
+const cards = await Promise.all(
+  services.map(async (s) => ({
+    ...s.data,
+    id: s.id,
+    orgs: s.data.courses.length ? await getOrgsForCourses(s.data.courses, `${s.id}.md`) : [],
+  })),
+);
+// 카드 수가 3의 배수면 3열, 아니면 2열로 둔다. 4개일 때 한 장만 아랫줄에 남지 않게 한다.
+const cols = cards.length % 3 === 0 ? 3 : 2;
+---
+
+<ol class={`cards cols-${cols}`}>
+  {
+    cards.map((c, i) => (
+      <li class="card reveal" id={`program-${c.id}`}>
+        <div class="top">
+          <span class="no" aria-hidden="true">
+            {String(i + 1).padStart(2, '0')}
+          </span>{' '}
+          <span class="badge">
+            <span class="sr">교육 시간 </span>
+            {c.duration}
+          </span>
+        </div>
+        <h3>{c.title}</h3>
+        <p class="desc">{c.description}</p>
+        <dl>
+          <div>
+            <dt>대상</dt>
+            <dd>{c.audience}</dd>
+          </div>
+          {c.orgs.length > 0 && (
+            <div>
+              <dt>진행 경험</dt>
+              <dd>
+                <ul class="tags">
+                  {c.orgs.map((o) => (
+                    <li class="tag plain">{o}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt>주요 커리큘럼</dt>
+            <dd>
+              <ul class="curriculum">
+                {c.curriculum.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        </dl>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  @media (min-width: 720px) {
+    .cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(20px, 3vw, 30px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card:hover {
+    border-color: var(--accent-line);
+    box-shadow: var(--shadow);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .no {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  .badge {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fff;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  h3 {
+    font-size: clamp(21px, 2.4vw, 24px);
+  }
+  .desc {
+    color: var(--ink-2);
+  }
+  dl {
+    margin: 4px 0 0;
+    display: grid;
+    gap: 14px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+  dt {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  dd {
+    margin: 0;
+    font-size: 15px;
+  }
+  .curriculum {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 4px;
+  }
+  .curriculum li {
+    position: relative;
+    padding-left: 18px;
+  }
+  .curriculum li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.72em;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--accent);
+    opacity: 0.7;
+  }
+</style>

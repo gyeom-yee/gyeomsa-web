@@ -1,0 +1,105 @@
+---
+import { nav, site } from '../site.config.ts';
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="brand" href="/" aria-label={`${site.name} 홈`}>
+      <span class="name">{site.name}</span>{' '}
+      <span class="role">{site.jobTitle}</span>
+    </a>
+    <nav aria-label="주 메뉴">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgb(251 250 247 / 0.9);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 20px;
+    flex-wrap: wrap;
+    padding-block: 12px;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .name {
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: -0.02em;
+  }
+  .role {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  nav a:hover {
+    background: #f0eee8;
+    color: var(--ink);
+  }
+  nav a[aria-current='page'] {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+  @media (max-width: 560px) {
+    .bar {
+      padding-block: 10px 6px;
+    }
+    .role {
+      display: none;
+    }
+    nav {
+      width: 100%;
+    }
+    ul {
+      justify-content: space-between;
+    }
+    nav a {
+      padding: 6px 6px;
+      font-size: 14px;
+    }
+  }
+</style>

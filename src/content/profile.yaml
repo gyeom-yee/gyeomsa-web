@@ -1,0 +1,118 @@
+# 소개 페이지의 경력·학력·교육 이수·자격·기술. 사용자가 적는다.
+# 이 저장소는 공개된다. 기업별 수강인원·강의시간·횟수, 익명 표기 기업의 실명,
+# 실명과 익명 표기의 대응은 적지 않는다(CLAUDE.md 공개 저장소 규칙).
+# 경력의 소속 회사명(org)은 강의 운영사여도 실명으로 적는다(2026-11-18 결정). 강의 이력 표에는 운영사를 싣지 않는다.
+# 기간 형식: "YYYY.MM ~ YYYY.MM" 또는 "YYYY.MM ~ 현재". 최근 항목을 위에 둔다.
+# 경력 항목(items)을 같은 페이지의 프로젝트 경험으로 연결하려면 문자열 대신
+#   - text: "항목 문장"
+#     project: "src/content/projects/의 파일 이름(확장자 빼고)"
+# 로 적는다. 없는 프로젝트를 적으면 빌드가 멈춘다.
+
+career:
+  - period: "2026.05 ~ 현재"
+    org: "프리랜서"
+    team: "AX 기업교육"
+    role: "AI 교육 강사"
+    items:
+      - "공공 연구기관 임직원 대상 'AI 네이티브를 위한 AI 리터러시' 시리즈 기획·진행"
+      - "마크다운 기반 컨텍스트 설계부터 부서별 AI 활용 규칙(DEPARTMENT-RULE.md) 배포까지 실무 적용 중심으로 설계"
+      - "고용노동부 지원 대학 AX 해커톤 AI 리터러시 강의"
+      - "Claude Code·Notion MCP로 강의 교안과 HTML 발표자료 제작 자동화"
+
+  - period: "2026.02 ~ 현재"
+    org: "팀스파르타"
+    team: "AX교육팀"
+    role: "기술튜터(프리랜서)"
+    items:
+      - "기업·기관 임직원 AI 교육 과정에서 강사와 함께 실습 지원"
+      - "Claude Code 에이전트 구축, LangSmith 기반 LLM 개발, Copilot Studio 에이전트 제작 등 개발·실무 과정 실습 지원"
+      - "대기업·금융·의료 등 여러 업종의 임직원 교육 참여"
+
+  - period: "2026.01 ~ 현재"
+    org: "데이원컴퍼니(패스트캠퍼스)"
+    team: "FC DX 기업교육팀"
+    role: "실습코치(프리랜서)"
+    items:
+      - "대기업·금융권 임직원 대상 AI·데이터 기업교육 과정의 실습 코칭"
+      - "LangChain·RAG 기반 LLM 애플리케이션 개발, Python·SQL·딥러닝(CNN·Transformer) 실습 코칭"
+      - "은행·반도체·패션 등 여러 업종의 임직원 생성형 AI·데이터 실습 코칭"
+
+  - period: "2025.07 ~ 2025.10"
+    org: "Systran by ChapsVision"
+    team: "언어공학팀"
+    role: "SW 엔지니어 인턴"
+    items:
+      - "화상회의용 실시간 양방향 통번역 플랫폼(On-premise MVP)의 초기 아키텍처 설계와 메일 인증 서버 구축"
+      - "인증 메일 비동기 발송 부하 테스트에서 100건 동시 요청을 0.92초에 처리(실패 0건)"
+      - text: "컨퍼런스 실시간 통역 PoC를 위한 STT 모델 평가 체계 구축"
+        project: "stt-benchmark"
+      - text: "공공데이터 기반 세일즈 리드 수집·우선순위 자동화"
+        project: "sales-lead-scoring"
+
+  - period: "2024.09 ~ 2024.12"
+    org: "한국능률협회컨설팅"
+    team: "AI빅데이터센터"
+    role: "Project Assistant 인턴"
+    items:
+      - text: "고양산업진흥원 중소기업 빅데이터 분석·활용 지원사업에서 7개사 데이터 수집·분석, 2개사 데이터 활용 전략 컨설팅"
+        project: "gipa-smb-data-analysis"
+      - text: "나라장터 개찰 결과 수집·업체 스코어링 프로그램 개발로 공고 1건 처리 시간을 약 70분에서 6분 30초로 단축"
+        project: "g2b-bid-crawler"
+
+# 학력과 교육 이수는 소개 페이지에서 "학력 및 교육 이수" 한 목록으로 보인다(학력 먼저, 그다음 교육 이수).
+#   degree: 학위(선택). 전공 옆에 "· 학사"처럼 붙는다
+#   detail: 재학 중 성과(수상·학생 활동) 한 줄(선택). 수상은 횟수만 적고 대회별 이름은 적지 않는다
+education:
+  - period: "2018.03 ~ 2025.02"
+    school: "한국항공대학교"
+    major: "소프트웨어학과"
+    degree: "학사"
+    detail: "창업·AI 경진대회 수상 6회(최우수상 4회). 창업동아리·재즈동아리 회장, 소프트웨어학과 학생회 부회장, 인공지능 학회 Deeperent 활동"
+
+#   status: 수료 여부(선택). 운영 기관 옆에 "· 수료"처럼 붙는다
+training:
+  - period: "2023.10 ~ 2024.05"
+    title: "Upstage AI Lab"
+    org: "패스트캠퍼스·Upstage"
+    status: "수료"
+    detail: "총 1,120시간 AI 리서치 엔지니어 과정. 모델링 경진대회 4회와 프로젝트 2회, IR 과학 지식 RAG 경진대회 2위"
+
+  - period: "2023.09 ~ 2023.11"
+    title: "Google ML Bootcamp"
+    org: "Google Developers Group"
+    status: "수료"
+    detail: "총 13주 머신러닝 개발 직무 과정. Coursera Deep Learning Specialization 이수, Kaggle 실습"
+
+# 자격. 최근 항목을 위에 둔다. 자격번호(식별번호)는 적지 않는다(사이트에 싣지 않으므로 저장소에도 두지 않는다).
+#   issued:  취득 연월 "YYYY.MM"
+#   expires: 만료 연월 "YYYY.MM". 유효기간이 있는 자격만 적는다. 빌드한 달이 이 달에 이르면 화면·JSON-LD·llms.txt에서 빠진다
+#   url:     발급기관의 배지·인증서 확인 페이지. 본인 자격이 보이는 주소만 넣고, 자격 안내 홈페이지로만 가는 주소는 넣지 않는다
+certifications:
+  - issued: "2026.11"
+    name: "NVIDIA Certified Associate: AI Model & Application Development"
+    org: "NVIDIA"
+    expires: "2028.11"
+    url: "https://credential.nvidia.com/5ee1cc4b-3a23-4937-aecd-07985f40d2be"
+
+  - issued: "2025.12"
+    name: "정보처리기사"
+    org: "한국산업인력공단"
+
+  - issued: "2025.04"
+    name: "SQLD (SQL 개발자)"
+    org: "한국데이터산업진흥원"
+
+  - issued: "2024.04"
+    name: "TensorFlow Developer Certificate"
+    org: "TensorFlow"
+    expires: "2027.04"
+    url: "https://www.credential.net/2c5bc2f9-60b9-48d0-b3e0-adb14cbf4589"
+
+# 소개 페이지 "다루는 주제와 기술"의 기술 목록. 묶음(group)마다 항목(items)을 적는다. 가르치는 도구를 앞에 둔다.
+skills:
+  - group: "AI 도구"
+    items: ["Claude", "Claude Code", "MCP", "ChatGPT", "Codex", "Gemini", "Gemini Notebook", "Microsoft Copilot Studio"]
+  - group: "LLM·에이전트 개발"
+    items: ["LangChain", "LangSmith", "RAG", "Hugging Face Transformers", "PyTorch"]
+  - group: "데이터 분석·수집"
+    items: ["Python", "pandas", "SQL", "웹 크롤링", "공공데이터 API"]

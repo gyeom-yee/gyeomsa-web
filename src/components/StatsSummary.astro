@@ -1,0 +1,104 @@
+---
+// 수치 요약. 공개 강의 이력에서 빌드 때 계산한 최종값을 HTML에 적는다(PRD F2-1, SEO-GUIDE 8.2).
+import { getLectureStats, ROLE_LABEL } from '../lib/notion/index.ts';
+import { asOfDate, formatNumber } from '../lib/content.ts';
+const stats = await getLectureStats();
+const asOf = asOfDate();
+const items = [
+  { value: stats.totalHours, unit: '시간', label: '누적 교육 참여시간' },
+  { value: stats.totalStudents, unit: '명', label: '누적 수강인원' },
+  { value: stats.orgCount, unit: '곳', label: '교육한 기업·기관' },
+];
+// 참여시간을 역할별로 나눠 기준 줄에 적는다(2026-11-20 결정). 두 역할이 모두 있을 때만 나눈다.
+const split =
+  stats.leadHours > 0 && stats.coachHours > 0
+    ? `교육 참여시간 중 ${ROLE_LABEL.lead} ${formatNumber(stats.leadHours)}시간, ${ROLE_LABEL.coach} ${formatNumber(stats.coachHours)}시간`
+    : null;
+---
+
+<div>
+  <dl class="stats">
+    {
+      items.map((i) => (
+        <div class="stat">
+          <dt>{i.label}</dt>
+          <dd>
+            <span class="num" data-count={i.value}>
+              {formatNumber(i.value)}
+            </span>
+            <span class="unit">{i.unit}</span>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  <p class="basis">
+    <time datetime={asOf.replaceAll('.', '-')}>{asOf}</time> 기준, 완료한 강의 합계{split && `. ${split}`}
+  </p>
+</div>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: clamp(16px, 2.6vw, 26px);
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 2px;
+  }
+  dt {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  dd {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .num {
+    font-size: clamp(26px, 4.6vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+  }
+  .unit {
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .basis {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  @media (max-width: 480px) {
+    .stats {
+      gap: 8px;
+    }
+    .stat {
+      padding: 14px 8px;
+    }
+    dt {
+      font-size: 12px;
+    }
+    /* 숫자와 단위가 한 줄에 들어가도록 폭 360px에서 줄인다 */
+    .num {
+      font-size: clamp(19px, 5.6vw, 26px);
+    }
+    .unit {
+      font-size: 12px;
+    }
+  }
+</style>

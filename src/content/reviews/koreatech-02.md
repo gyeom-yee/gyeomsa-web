@@ -1,9 +1,9 @@
 ---
 affiliation: "한국기술교육대학교"
 role: "수강생"
-course: ""
+course: "고용노동부 지원 Claude Code 활용 대학생 AX 해커톤 교육"
 date: ""
-order: 21
+order: 23
 ---
 
 skills 지식이 늘었어요

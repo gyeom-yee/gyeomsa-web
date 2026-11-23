@@ -24,11 +24,13 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 
 ## 기술 스택
 
-프레임워크는 Astro로 확정했다(PRD 6장). 나머지는 코드가 아직 없는 상태의 잠정안이다. 바꾸면 이 파일도 함께 고친다.
+프레임워크는 Astro로 확정했다(PRD 6장). 아래 구성으로 구현했다. 바꾸면 이 파일과 README.md도 함께 고친다.
 
-- Astro(정적 출력) + TypeScript(strict)
-- 콘텐츠: 강의 이력은 Notion API(`@notionhq/client`)로 빌드 시점에만 호출, 제공 교육·프로젝트 사례·고객 후기는 저장소의 마크다운 파일
+- Astro 7(정적 출력, `trailingSlash: 'always'`) + TypeScript(strict), `@astrojs/sitemap`
+- 이미지: `astro:assets`로 WebP 변환. `/profile.jpg`(JSON-LD용)와 `/og.png`는 빌드 때 `sharp`로 만든다
+- 콘텐츠: 강의 이력은 Notion API(`@notionhq/client`)로 빌드 시점에만 호출, 제공 교육·프로젝트 경험·고객 후기는 저장소의 마크다운 파일
 - 스타일: 순수 CSS(Astro scoped style)
+- 글꼴: Pretendard 1.3.9 공식 서브셋 woff2(400·500·600·700·800)를 `src/assets/fonts/pretendard/`에 두고 `global.css`의 `@font-face`로 내려준다. 새 굵기를 쓰면 파일과 `@font-face`를 함께 추가한다. 같은 폴더의 `LICENSE.txt`(SIL OFL)를 지우지 않는다
 - 패키지 매니저: npm
 - 도메인: gyeomsa.com
 - 호스팅: 미정
@@ -45,15 +47,20 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 ├─ naming/            작명 메모(NAMING.md, 후보 CSV). 기획과 무관, 깃 제외
 ├─ references/        참고용으로 저장한 외부 사이트. 기획과 무관, 깃 제외
 ├─ raw_reviews/       후기 원본 설문(엑셀). 깃 제외
-├─ src/               (예정)
+├─ scripts/check-dist.ts  빌드 결과 공개 검사(npm run check:dist)
+├─ src/
+│  ├─ site.config.ts  이름·한 줄 소개·이메일·외부 링크. 이 값들은 여기서만 적는다
+│  ├─ content.config.ts  콘텐츠 파일 형식 검사(필수 값)
 │  ├─ pages/          라우트. URL 규칙은 SEO-GUIDE 2장
 │  ├─ layouts/        공통 레이아웃, <head> 조립
 │  ├─ components/
 │  ├─ content/services/   제공 교육. 홈 카드마다 {slug}.md 하나(별도 페이지 없음)
-│  ├─ content/projects/   프로젝트 사례. 프로젝트마다 {slug}.md 하나
+│  ├─ content/projects/   프로젝트 경험(소개 페이지 섹션, 별도 페이지 없음). 프로젝트마다 {slug}.md 하나
 │  ├─ content/reviews/    고객 후기. 후기마다 {slug}.md 하나
 │  ├─ content/clients.yaml  주요 교육 기업 목록(실명)
-│  └─ lib/notion/     Notion 호출·변환 코드는 여기에만 둔다
+│  ├─ content/profile.yaml  소개 페이지의 경력·학력·교육 이수·자격·기술
+│  ├─ lib/notion/     Notion 호출·변환 코드는 여기에만 둔다. audit.ts는 검사 스크립트 전용
+│  └─ assets/         프로필 사진, 글꼴(fonts/pretendard/)
 ├─ public/            robots.txt 등 정적 파일
 ├─ .env               비밀값. 커밋 금지
 └─ .env.example       변수 이름만 적은 견본
@@ -66,6 +73,8 @@ npm install        의존성 설치
 npm run dev        개발 서버
 npm run build      Notion에서 내용을 가져와 dist/ 생성
 npm run preview    빌드 결과 확인
+npm run check      타입 검사(astro check)
+npm run check:dist 빌드 뒤 dist/에 Notion 내부 값·토큰이 없는지 검사
 ```
 
 배포 명령은 아직 없다. GitHub와 호스팅은 나중에 연결한다.
@@ -77,8 +86,10 @@ npm run preview    빌드 결과 확인
 - Notion에서 읽는 대상은 강의 이력 DB 하나뿐이다. 제공 교육은 `src/content/services/`의 파일에서 읽는다.
 - 교육 목록을 코드나 다른 파일에 따로 적지 않는다. 홈의 교육 카드와 llms.txt 모두 `src/content/services/`에서 만든다. 제공 교육은 별도 페이지를 만들지 않는다.
 - 제공 교육 파일의 본문 문구는 사용자가 쓴다. 요청 없이 내용을 지어내 채우지 않는다.
-- 프로젝트 사례와 고객 후기도 `src/content/projects/`, `src/content/reviews/`의 파일에서 읽고, 문구는 사용자가 쓴다. 후기를 지어내거나 고쳐 쓰지 않는다.
+- 프로젝트 경험과 고객 후기도 `src/content/projects/`, `src/content/reviews/`의 파일에서 읽고, 문구는 사용자가 쓴다. 후기를 지어내거나 고쳐 쓰지 않는다. 프로젝트의 `affiliation`에는 고객사가 아니라 일한 곳·참여한 과제를 적는다.
 - 주요 교육 기업 목록은 `src/content/clients.yaml`에서만 읽고, 사용자가 적는다. Notion의 `기업명`으로 채우지 않는다.
+- 소개 페이지의 경력·학력·교육 이수·자격·기술은 `src/content/profile.yaml`에서만 읽는다. 경력 항목에 기업별 수강인원·시간·횟수나 익명 표기 기업명을 적지 않는다.
+- 자격에는 자격번호(식별번호)를 적지 않는다. 확인 링크(`url`)는 발급기관의 배지·인증서 페이지만 넣고, 자격 안내 홈페이지로만 가는 주소는 넣지 않는다.
 - 홈의 수치 요약은 `src/lib/notion/`이 가져온 공개 강의 이력에서 계산한다. 숫자를 코드에 직접 적지 않고, HTML의 초기값을 0으로 두지 않는다.
 - 강의 이력 DB는 `공개과정명`과 `공개기업명`이 모두 채워지고 `참여상태`가 `완료`인 항목만 가져온다. 이 필터는 `src/lib/notion/` 안에서 건다.
 - 강의 이력에서 사이트로 내보내는 이름은 `공개과정명`과 `공개기업명`뿐이다. `강의명`, `기업명`, `교육기관` 값은 `src/lib/notion/` 밖으로 넘기지 않는다.
@@ -101,6 +112,7 @@ npm run preview    빌드 결과 확인
 이 저장소는 GitHub에 공개된다. 사이트에 나가지 않는 정보는 저장소에도 두지 않는다는 기준으로 판단한다. 커밋 기록은 지워지지 않으므로 커밋 전에 지킨다.
 
 - 저장소에 적지 않는 것: 익명 표기 기업의 실명, 실명과 익명 표기의 대응, 기업별 수강인원·강의시간·횟수, Notion의 `강의명`·`기업명`·`교육기관` 값. 파일 내용뿐 아니라 파일 이름, 주석, 문서, 커밋 메시지에도 적용한다.
+- 예외: `profile.yaml` 경력 항목의 소속 회사명(`career.org`)은 `교육기관` 값과 같아도 실명으로 적는다(2026-11-18 결정). 강의 이력 표와 그 밖의 곳에는 여전히 운영사를 싣지 않는다.
 - Notion 응답을 파일로 저장하지 않는다. 캐시가 꼭 필요하면 `.notion-cache/`에만 두고, 이 폴더는 `.gitignore`에 있어야 한다.
 - 빌드에 필요한 파일(`src/content/` 등)은 `.gitignore`로 숨기지 않는다. 호스팅이 저장소에서 빌드하므로 빌드가 깨진다. 숨겨야 하는 내용은 처음부터 저장소에 두지 않는다.
 - 커밋 전에 `git status`로 `.env`, `naming/`, `references/`, `raw_reviews/`, `.notion-cache/`가 빠졌는지 확인한다.
@@ -115,4 +127,4 @@ npm run preview    빌드 결과 확인
 - 사용자가 요청하기 전에 `git init`, 원격 저장소 생성, push, 배포 설정을 하는 것.
 - 외부 CSS 프레임워크, UI 라이브러리, 분석·추적 스크립트를 묻지 않고 추가하는 것.
 - 크롤러에게만 사람과 다른 내용을 보여주는 것.
-- `공개과정명`이나 `공개기업명`이 빈 Notion 항목, 그리고 Notion의 `강의명`·`기업명`·`교육기관` 값을 저장소나 빌드 결과에 남기는 것.
+- `공개과정명`이나 `공개기업명`이 빈 Notion 항목, 그리고 Notion의 `강의명`·`기업명`·`교육기관` 값을 저장소나 빌드 결과에 남기는 것(경력 소속 회사명 예외는 "공개 저장소 규칙" 참고).

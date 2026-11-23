@@ -1,0 +1,36 @@
+---
+// 프로젝트 경험 목록(소개 페이지). 카드 격자가 아니라 한 줄에 하나씩 위아래로 나열하고 구분선으로 나눈다.
+import type { CollectionEntry } from 'astro:content';
+import ProjectCard from './ProjectCard.astro';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  headingLevel?: 'h2' | 'h3';
+}
+const { projects, headingLevel = 'h2' } = Astro.props;
+---
+
+<ul class="project-list">
+  {
+    projects.map((p) => (
+      <li>
+        <ProjectCard project={p} headingLevel={headingLevel} />
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* 구분선은 항목 사이에만 둔다(목록의 맨 위·맨 아래에는 두지 않는다). 경력·학력의 timeline과 같다 */
+  .project-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .project-list > li + li {
+    border-top: 1px solid var(--line);
+  }
+  .project-list > li:first-child :global(.project) {
+    padding-top: 0;
+  }
+</style>

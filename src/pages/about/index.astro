@@ -1,0 +1,452 @@
+---
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import Base from '../../layouts/Base.astro';
+import ProfilePhotos from '../../components/ProfilePhotos.astro';
+import ClientCloud from '../../components/ClientCloud.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import Icon from '../../components/Icon.astro';
+import { site } from '../../site.config.ts';
+import { profilePageNode } from '../../lib/jsonld.ts';
+import { getLectureStats } from '../../lib/notion/index.ts';
+import { formatNumber, getProjects, getServices } from '../../lib/content.ts';
+import { getProfile } from '../../lib/profile.ts';
+
+const stats = await getLectureStats();
+const services = await getServices();
+// 프로젝트 경험(2026-11-20: 별도 페이지를 없애고 소개 페이지의 이력으로 옮김). 최신순.
+const projects = await getProjects();
+// 이력서 PDF가 없으면 버튼을 비활성으로 둔다(PRD 3장 소개).
+const hasResume = existsSync(join(process.cwd(), 'public', site.resumePath));
+// 다루는 기술은 profile.yaml의 skills에서만 읽는다(묶음별 목록).
+const { career, education, training, certifications, skills } = getProfile();
+// 학력과 교육 이수는 "학력 및 교육 이수" 한 목록으로 보여 준다(학력 먼저). 항목마다 제목·기간·보조 줄·설명.
+const eduRecords = [
+  ...education.map((e) => ({ period: e.period, title: e.school, sub: [e.major, e.degree], detail: e.detail })),
+  ...training.map((t) => ({ period: t.period, title: t.title, sub: [t.org, t.status], detail: t.detail })),
+].map((r) => ({ ...r, sub: r.sub.filter((s): s is string => Boolean(s)) }));
+// 경력 항목이 가리키는 프로젝트가 실제로 있는지 확인한다. 없으면 같은 페이지 안 링크가 깨지므로 빌드를 멈춘다.
+const projectIds = new Set(projects.map((p) => p.id));
+for (const c of career) {
+  for (const item of c.items) {
+    if (item.project && !projectIds.has(item.project)) {
+      throw new Error(`[profile] 경력 "${c.org}"의 project "${item.project}"에 해당하는 src/content/projects/${item.project}.md가 없습니다.`);
+    }
+  }
+}
+---
+
+<Base
+  title={`${site.name} 소개 | ${site.jobTitle}`}
+  description={`${site.name}의 경력과 전문 분야. 기업·기관 ${formatNumber(stats.orgCount)}곳에서 진행한 AI 리터러시·Claude 업무 자동화 교육(누적 교육 참여 ${formatNumber(stats.totalHours)}시간)과 프로젝트 경험을 정리했습니다.`}
+  ogType="profile"
+  breadcrumb="소개"
+  jsonld={[profilePageNode()]}
+>
+  <section class="wrap intro">
+    <div class="text">
+      <p class="eyebrow">{site.headline}</p>
+      <h1>{site.name} <span lang="en">{site.nameEn}</span></h1>
+      <p class="motto">{site.motto}</p>
+      <p class="lead">{site.introBody} {site.story}</p>
+      <div class="actions">
+        {
+          hasResume ? (
+            <a class="btn" href={site.resumePath} download>
+              이력서 PDF 내려받기
+            </a>
+          ) : (
+            <span class="btn" aria-disabled="true">
+              이력서 준비 중
+            </span>
+          )
+        }{' '}
+        <a class="btn ghost" href="/contact/">강의 문의하기</a>
+        <a class="icon-btn" href={site.links.linkedin} rel="me noopener" aria-label="LinkedIn 프로필" title="LinkedIn">
+          <Icon name="linkedin" />
+        </a>
+        <a class="icon-btn" href={site.links.github} rel="me noopener" aria-label="GitHub 프로필" title="GitHub">
+          <Icon name="github" />
+        </a>
+      </div>
+    </div>
+    <div class="photo">
+      <ProfilePhotos eager />
+    </div>
+  </section>
+
+  {
+    career.length > 0 && (
+      <section class="section" aria-labelledby="career-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Work Experience</span>
+            <h2 id="career-title">경력</h2>
+          </div>
+          <ol class="timeline">
+            {career.map((c) => (
+              <li class="reveal">
+                <p class="when">{c.period}</p>
+                <div class="what">
+                  <h3>
+                    {c.org}{' '}
+                    <span class="sub">{[c.team, c.role].filter(Boolean).join(' · ')}</span>
+                  </h3>
+                  {c.items.length > 0 && (
+                    <ul class="items">
+                      {c.items.map((item) => (
+                        <li>
+                          {item.project ? (
+                            <a class="to-project" href={`#${item.project}`}>
+                              {item.text}
+                            </a>
+                          ) : (
+                            item.text
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    eduRecords.length > 0 && (
+      <section class="section" aria-labelledby="edu-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Education</span>
+            <h2 id="edu-title">학력 및 교육 이수</h2>
+          </div>
+          <ol class="timeline">
+            {eduRecords.map((r) => (
+              <li>
+                <p class="when">{r.period}</p>
+                <div class="what">
+                  <h3>{r.title}</h3>
+                  {r.sub.length > 0 && <p class="rec-sub">{r.sub.join(' · ')}</p>}
+                  {r.detail && <p class="rec-detail">{r.detail}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    certifications.length > 0 && (
+      <section class="section" aria-labelledby="cert-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Certifications</span>
+            <h2 id="cert-title">자격</h2>
+          </div>
+          <ol class="timeline">
+            {certifications.map((c) => (
+              <li>
+                <p class="when">{c.issued}</p>
+                <div class="what">
+                  <h3>{c.name}</h3>
+                  <p class="rec-sub">
+                    {c.org}
+                    {c.url && (
+                      <>
+                        {' · '}
+                        <a class="verify" href={c.url} rel="noopener" aria-label={`${c.name} 자격 확인(발급기관 페이지)`}>
+                          자격 확인<span aria-hidden="true"> ↗</span>
+                        </a>
+                      </>
+                    )}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="section" id="projects" aria-labelledby="projects-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Projects</span>
+            <h2 id="projects-title">프로젝트 경험</h2>
+            <p>
+              RAG·LLM 서비스와 업무 자동화를 현업·산학 과제에서 직접 설계하고 구현했습니다. 강의에서 다루는 기술로 실제
+              업무 시간을 줄이고 서비스를 만든 경험입니다.
+            </p>
+          </div>
+          <ProjectList projects={projects} headingLevel="h3" />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" aria-labelledby="topics-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Expertise</span>
+        <h2 id="topics-title">다루는 주제와 기술</h2>
+      </div>
+      <div class="topics">
+        <div>
+          <h3>교육 주제</h3>
+          <ul class="topic-list">
+            {
+              services.map((s) => (
+                <li>
+                  <a href={`/#program-${s.id}`}>{s.data.title}</a>{' '}
+                  <span>{s.data.audience}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        {
+          skills.length > 0 && (
+            <div>
+              <h3>기술</h3>
+              <dl class="skills">
+                {skills.map((g) => (
+                  <div>
+                    <dt>{g.group}</dt>
+                    <dd>
+                      <ul class="tags">
+                        {g.items.map((t) => (
+                          <li class="tag">{t}</li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <ClientCloud />
+</Base>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: clamp(32px, 5vw, 64px);
+    /* 글 열을 위에 붙인다. 가운데 정렬이면 사진 높이만큼 글이 밀려 강의 이력·문의와 시작 높이가 달라진다 */
+    align-items: start;
+    padding-block: var(--page-top) clamp(48px, 7vw, 80px);
+  }
+  .text {
+    display: grid;
+    gap: 18px;
+  }
+  h1 {
+    font-size: clamp(40px, 6.5vw, 64px);
+    letter-spacing: -0.04em;
+  }
+  h1 span {
+    font-size: 0.36em;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--muted);
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+  .motto {
+    font-size: clamp(19px, 2.4vw, 23px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    padding-left: 14px;
+    border-left: 3px solid var(--accent);
+  }
+  .lead {
+    font-size: clamp(17px, 2vw, 19px);
+    color: var(--ink-2);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .actions {
+    align-items: center;
+  }
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-2);
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .icon-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent-line);
+    transform: translateY(-1px);
+  }
+  .timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .timeline > li {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 4px 28px;
+    padding-block: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .timeline > li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .when {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    padding-top: 3px;
+  }
+  .what h3 {
+    font-size: clamp(19px, 2.2vw, 22px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 12px;
+  }
+  .sub {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0;
+  }
+  .items {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 6px;
+    color: var(--ink-2);
+    font-size: 16px;
+  }
+  .items li {
+    position: relative;
+    padding-left: 16px;
+  }
+  /* 같은 페이지의 프로젝트 경험으로 가는 링크. 본문 색은 유지하고 밑줄로만 표시한다 */
+  .to-project {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent-line);
+    text-decoration-thickness: 1.5px;
+  }
+  .to-project:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+  .items li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 0.75em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  /* 학력 및 교육 이수, 자격: 경력과 같은 timeline 배치(왼쪽 열에 날짜). 제목 아래 보조 줄(전공·학위, 기관·수료)과 설명 */
+  .rec-sub {
+    margin-top: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+  .rec-detail {
+    margin-top: 4px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .verify {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .verify:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 760px) {
+    .timeline > li {
+      grid-template-columns: 1fr;
+    }
+  }
+  .topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: 32px;
+  }
+  .topics h3 {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+  .topic-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+  .topic-list li {
+    display: grid;
+  }
+  .topic-list a {
+    font-weight: 700;
+  }
+  .topic-list span {
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .skills {
+    margin: 0;
+    display: grid;
+    gap: 16px;
+  }
+  .skills dt {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .skills dd {
+    margin: 0;
+  }
+  @media (max-width: 860px) {
+    .intro {
+      grid-template-columns: 1fr;
+    }
+    .photo {
+      max-width: 380px;
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+</style>

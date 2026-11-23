@@ -1,0 +1,124 @@
+---
+// 모든 페이지가 거치는 공통 레이아웃. title·description·canonical·OG·JSON-LD를 여기서 넣는다(SEO-GUIDE 3장).
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ToTop from '../components/ToTop.astro';
+import { absUrl, site } from '../site.config.ts';
+import { breadcrumbNode, toGraph } from '../lib/jsonld.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  ogType?: 'website' | 'profile';
+  /** 하위 페이지 이름. 주면 화면 경로 표시와 BreadcrumbList를 함께 넣는다 */
+  breadcrumb?: string;
+  jsonld?: object[];
+  noindex?: boolean;
+}
+
+const { title, description, ogType = 'website', breadcrumb, jsonld = [], noindex = false } = Astro.props;
+const canonical = absUrl(Astro.url.pathname);
+const nodes = breadcrumb ? [...jsonld, breadcrumbNode(breadcrumb)] : jsonld;
+const ld = nodes.length ? JSON.stringify(toGraph(nodes)).replace(/</g, '\\u003c') : null;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={absUrl('/og.png')} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {ld && <script type="application/ld+json" set:html={ld} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">본문으로 건너뛰기</a>
+    <Header />
+    <main id="main">
+      {
+        breadcrumb && (
+          <nav class="crumbs wrap" aria-label="현재 위치">
+            <ol>
+              <li><a href="/">홈</a></li>
+              <li aria-current="page">{breadcrumb}</li>
+            </ol>
+          </nav>
+        )
+      }
+      <slot />
+    </main>
+    <Footer />
+    <ToTop />
+
+    <script is:inline>
+      // 동적 효과(SEO-GUIDE 8장). 이 스크립트가 돌지 않으면 모든 요소가 처음부터 보인다.
+      // js 클래스를 붙이는 일과 in을 붙이는 일을 같은 스크립트가 한다.
+      (function () {
+        if (!('IntersectionObserver' in window)) return;
+        var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var els = document.querySelectorAll('.reveal');
+        var counters = document.querySelectorAll('[data-count]');
+        function count(el) {
+          var end = Number(el.getAttribute('data-count'));
+          var text = el.textContent;
+          if (reduce || !isFinite(end) || end <= 0) return;
+          var t0 = performance.now(), dur = 1200;
+          function step(t) {
+            var k = Math.min(1, (t - t0) / dur);
+            var v = Math.round(end * (1 - Math.pow(1 - k, 3)));
+            el.textContent = k < 1 ? v.toLocaleString('ko-KR') : text;
+            if (k < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            e.target.classList.add('in');
+            if (e.target.hasAttribute('data-count')) count(e.target);
+            io.unobserve(e.target);
+          });
+        }, { rootMargin: '0px 0px -8% 0px' });
+        // 이미 화면 안에 있는 요소는 숨기지 않는다(깜빡임 방지).
+        els.forEach(function (el) {
+          if (el.getBoundingClientRect().top < innerHeight) el.classList.add('in');
+          else io.observe(el);
+        });
+        counters.forEach(function (el) { io.observe(el); });
+        // 맨 위로 버튼: 한 화면 넘게 내려가면 보인다. js 클래스보다 먼저 상태를 정해 깜빡이지 않게 한다.
+        var toTop = document.querySelector('.to-top');
+        if (toTop) {
+          var toggle = function () { toTop.classList.toggle('show', scrollY > innerHeight); };
+          addEventListener('scroll', toggle, { passive: true });
+          toggle();
+          toTop.addEventListener('click', function (e) {
+            e.preventDefault();
+            scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+            // 버튼이 곧 숨으므로 포커스를 맨 위 링크로 옮긴다. 키보드 사용자의 다음 Tab이 페이지 위에서 이어진다.
+            var first = document.querySelector('.site-header a');
+            if (first) first.focus({ preventScroll: true });
+          });
+        }
+        document.documentElement.classList.add('js');
+      })();
+    </script>
+  </body>
+</html>

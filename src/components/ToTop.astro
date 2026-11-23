@@ -1,0 +1,60 @@
+---
+// 맨 위로 버튼. 기본은 보이는 #top 링크라 JS가 없어도 동작한다(id가 top인 요소가 없으면 브라우저가 문서 맨 위로 보낸다).
+// JS가 돌면 Base.astro의 스크립트가 한 화면쯤 내려갔을 때만 show를 붙여 보이게 하고, 누르면 부드럽게 올린다(SEO-GUIDE 8장).
+---
+
+<a class="to-top" href="#top" aria-label="맨 위로 이동" title="맨 위로">
+  <svg
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    aria-hidden="true"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"></path>
+  </svg>
+</a>
+
+<style>
+  .to-top {
+    position: fixed;
+    right: var(--gutter);
+    bottom: var(--gutter);
+    z-index: 4;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-2);
+    box-shadow: var(--shadow);
+    transition:
+      opacity 0.2s ease,
+      visibility 0.2s ease,
+      transform 0.2s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .to-top:hover {
+    color: var(--accent);
+    border-color: var(--accent-line);
+    transform: translateY(-2px);
+  }
+  /* 숨김은 js 클래스가 있을 때만. visibility로 숨겨 보이지 않는 동안 Tab으로도 닿지 않게 한다 */
+  :global(.js) .to-top:not(.show) {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .to-top {
+      transition: none;
+    }
+  }
+</style>

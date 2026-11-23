@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../site.config.ts';
+import { getServices } from '../../lib/content.ts';
+
+const services = await getServices();
+const subject = encodeURIComponent('[강의 문의] ');
+const body = encodeURIComponent('기관명:\n대상과 인원:\n희망 일정:\n다루고 싶은 주제:\n');
+const mailto = `mailto:${site.email}?subject=${subject}&body=${body}`;
+---
+
+<Base
+  title={`강의 문의 | ${site.name}`}
+  description={`${site.name}에게 기업 AI 교육과 특강을 문의하는 방법. 이메일 주소와 함께 대상 인원, 희망 일정, 주제처럼 미리 알려 주시면 좋은 정보를 안내합니다.`}
+  breadcrumb="강의 문의"
+>
+  <div class="wrap page-head">
+    <h1>강의 문의</h1>
+    <p class="lead">
+      강의 문의는 이메일로 받습니다. 아래 주소로 보내 주시면 내용을 확인한 뒤 회신드립니다.
+    </p>
+  </div>
+
+  <div class="wrap layout">
+    <section class="mail" aria-labelledby="mail-title">
+      <h2 id="mail-title">이메일</h2>
+      <p class="address">{site.email}</p>
+      <a class="btn" href={mailto}>메일 쓰기</a>
+    </section>
+
+    <section aria-labelledby="info-title">
+      <h2 id="info-title">문의할 때 알려 주시면 좋은 정보</h2>
+      <ol class="info">
+        <li>
+          <strong>대상과 인원</strong>{' '}
+          <span>직군, 직급, AI 사용 경험, 예상 인원</span>
+        </li>
+        <li>
+          <strong>일정</strong>{' '}
+          <span>희망 날짜와 시간, 1회 특강인지 다회차 과정인지</span>
+        </li>
+        <li>
+          <strong>주제</strong>{' '}
+          <span>다루고 싶은 내용이나 교육 뒤에 기대하는 변화</span>
+        </li>
+      </ol>
+      {
+        services.length > 0 && (
+          <p class="programs">
+            주제는 <a href="/#programs">주요 교육 프로그램</a>(
+            {services.map((s) => s.data.title).join(', ')})을 참고해 주세요.
+          </p>
+        )
+      }
+    </section>
+  </div>
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 24px;
+    align-items: start;
+    padding-bottom: clamp(56px, 9vw, 104px);
+  }
+  section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(22px, 3.4vw, 34px);
+    display: grid;
+    gap: 16px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+  .address {
+    font-size: clamp(19px, 2.6vw, 24px);
+    font-weight: 800;
+    word-break: break-all;
+  }
+  .mail .btn {
+    justify-self: start;
+  }
+  .info {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 14px;
+    counter-reset: info;
+  }
+  .info li {
+    display: grid;
+    padding-left: 40px;
+    position: relative;
+    counter-increment: info;
+  }
+  .info li::before {
+    content: counter(info);
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 800;
+    font-size: 14px;
+    display: grid;
+    place-items: center;
+  }
+  .info span {
+    color: var(--ink-2);
+    font-size: 15px;
+  }
+  .programs {
+    font-size: 15px;
+    color: var(--muted);
+  }
+  @media (max-width: 760px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

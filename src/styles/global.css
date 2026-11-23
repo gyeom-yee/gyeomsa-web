@@ -1,0 +1,289 @@
+/* 공통 토큰과 기본 스타일. 1차는 라이트 모드만 만든다(PRD F11). */
+
+/* 글꼴: Pretendard 1.3.9 공식 서브셋(상용 한글 2,780자). SIL OFL 1.1, 라이선스는 같은 폴더의 LICENSE.txt.
+   방문자 PC에 Pretendard가 설치돼 있으면 그것을 쓰고, 없으면 이 파일을 내려받는다.
+   사이트에서 쓰는 굵기(400·500·600·700·800)만 둔다. 굵기를 새로 쓰면 여기에도 추가한다. */
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Pretendard Regular'), url('../assets/fonts/pretendard/Pretendard-Regular.subset.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local('Pretendard Medium'), url('../assets/fonts/pretendard/Pretendard-Medium.subset.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Pretendard SemiBold'), url('../assets/fonts/pretendard/Pretendard-SemiBold.subset.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Pretendard Bold'), url('../assets/fonts/pretendard/Pretendard-Bold.subset.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: local('Pretendard ExtraBold'), url('../assets/fonts/pretendard/Pretendard-ExtraBold.subset.woff2') format('woff2');
+}
+
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #16181d;
+  --ink-2: #3d424d;
+  --muted: #667085;
+  --line: #e6e3dc;
+  --accent: #2f45c4;
+  --accent-ink: #ffffff;
+  --accent-soft: #eef0fc;
+  --accent-line: #cfd5f6;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --shadow: 0 1px 2px rgb(16 24 40 / 0.05), 0 8px 24px rgb(16 24 40 / 0.07);
+  --shadow-lg: 0 2px 6px rgb(16 24 40 / 0.06), 0 22px 48px rgb(16 24 40 / 0.14);
+  --wrap: 1120px;
+  --gutter: clamp(16px, 4vw, 32px);
+  /* 첫 블록의 위 여백. 하위 페이지는 경로 표시 바로 아래부터 잰다.
+     경로 표시가 없는 홈은 --crumbs-h만큼 더 띄워 모든 페이지의 첫 글자 높이를 맞춘다 */
+  --page-top: clamp(32px, 6vw, 64px);
+  --crumbs-h: 44px;
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', system-ui, sans-serif;
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: 96px;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.7;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  padding: 8px 14px;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 8px;
+  z-index: 10;
+}
+.skip:focus {
+  top: 12px;
+}
+
+.section {
+  padding-block: clamp(56px, 9vw, 104px);
+}
+.section + .section {
+  border-top: 1px solid var(--line);
+}
+.section-head {
+  margin-bottom: clamp(24px, 4vw, 40px);
+  display: grid;
+  gap: 10px;
+}
+.eyebrow {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.section-head h2 {
+  font-size: clamp(26px, 3.6vw, 36px);
+}
+.section-head p {
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgb(47 69 196 / 0.25);
+}
+.btn.ghost {
+  background: transparent;
+  color: var(--accent);
+}
+.btn.ghost:hover {
+  background: var(--accent-soft);
+  box-shadow: none;
+}
+.btn[aria-disabled='true'] {
+  background: var(--line);
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.more-link {
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 28px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.more-link:hover {
+  text-decoration: underline;
+}
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+}
+.tag.plain {
+  background: #f3f2ee;
+  color: var(--ink-2);
+  border-color: var(--line);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page-head {
+  padding-block: var(--page-top) clamp(24px, 4vw, 40px);
+  display: grid;
+  gap: 16px;
+}
+.page-head h1 {
+  font-size: clamp(32px, 5vw, 48px);
+}
+.page-head .lead {
+  font-size: clamp(17px, 2vw, 19px);
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+.crumbs ol {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  height: var(--crumbs-h);
+  padding: 20px 0 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--muted);
+}
+.crumbs li + li::before {
+  content: '/';
+  margin-right: 8px;
+  color: var(--line);
+}
+.crumbs a {
+  color: var(--muted);
+}
+
+/* 스크롤 등장. 기본은 보임. js 클래스가 있을 때만 숨긴다(SEO-GUIDE 8.1) */
+.reveal {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.js .reveal:not(.in) {
+  opacity: 0;
+  transform: translateY(14px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal:not(.in) {
+    opacity: 1;
+    transform: none;
+  }
+  .btn,
+  .reveal {
+    transition: none;
+  }
+}

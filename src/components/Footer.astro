@@ -1,0 +1,85 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../site.config.ts';
+const year = new Date().getFullYear();
+const links = [
+  { icon: 'mail', href: `mailto:${site.email}`, label: site.email, rel: undefined },
+  { icon: 'linkedin', href: site.links.linkedin, label: 'LinkedIn', rel: 'me noopener' },
+  { icon: 'github', href: site.links.github, label: 'GitHub', rel: 'me noopener' },
+] as const;
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="name">{site.name} <span lang="en">{site.nameEn}</span></p>
+      <p class="headline">{site.headline}</p>
+    </div>
+    <ul>
+      {
+        links.map((l) => (
+          <li>
+            <a href={l.href} rel={l.rel}>
+              <Icon name={l.icon} size={18} />
+              <span>{l.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <p class="wrap copy">© {year} {site.name}</p>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    background: #f4f2ed;
+    padding-block: 40px 28px;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .name {
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .name span {
+    font-weight: 500;
+    color: var(--muted);
+    margin-left: 6px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--accent);
+  }
+  a:hover span {
+    text-decoration: underline;
+  }
+  a :global(svg) {
+    flex: none;
+  }
+  .copy {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,289 @@
+---
+import Base from '../layouts/Base.astro';
+import ProfilePhotos from '../components/ProfilePhotos.astro';
+import StatsSummary from '../components/StatsSummary.astro';
+import ClientCloud from '../components/ClientCloud.astro';
+import ServiceCards from '../components/ServiceCards.astro';
+import LectureTable from '../components/LectureTable.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import ContactCta from '../components/ContactCta.astro';
+import { site } from '../site.config.ts';
+import { personNode, websiteNode } from '../lib/jsonld.ts';
+import { getLectureGroups, getLectureStats, getRatingSummary } from '../lib/notion/index.ts';
+import { formatNumber, getReviews } from '../lib/content.ts';
+
+const stats = await getLectureStats();
+const recent = (await getLectureGroups()).slice(0, 5);
+const reviews = await getReviews();
+const rating = await getRatingSummary();
+const REVIEWS_SHOWN = 6;
+const reviewsShown = reviews.slice(0, REVIEWS_SHOWN);
+const reviewsMore = reviews.slice(REVIEWS_SHOWN);
+---
+
+<Base title={`${site.name} | ${site.jobTitle}`} description={site.intro} jsonld={[websiteNode(), personNode()]}>
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-text">
+        <h1>
+          <span class="h1-name">{site.name}</span>{' '}
+          <span class="h1-role">{site.headline}</span>
+        </h1>
+        <p class="tagline">
+          {
+            site.tagline.map((line) => {
+              const [before, after] = line.split(site.taglineHighlight);
+              // 줄 끝 공백은 화면에 보이지 않고, 텍스트로 읽을 때 두 줄이 붙지 않게 한다.
+              return (
+                <span>
+                  {after === undefined ? line : [before, <em>{site.taglineHighlight}</em>, after]}{' '}
+                </span>
+              );
+            })
+          }
+        </p>
+        <p class="lead">
+          {site.introBody}
+          {' '}{site.story}
+        </p>
+        <div class="actions">
+          <a class="btn" href="/contact/">강의 문의하기</a>{' '}
+          <a class="btn ghost" href="/lectures/">강의 이력 보기</a>
+        </div>
+      </div>
+      <div class="hero-photo">
+        <ProfilePhotos eager />
+      </div>
+    </div>
+    <div class="wrap stats-wrap">
+      <h2 class="sr">강의 실적 요약</h2>
+      <StatsSummary />
+    </div>
+  </section>
+
+  <ClientCloud />
+
+  <section class="section" id="programs" aria-labelledby="programs-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Programs</span>
+        <h2 id="programs-title">주요 교육 프로그램</h2>
+        <p>정해진 커리큘럼 목록이 아니라, 기관의 업무와 대상에 맞춰 시간과 내용을 조정합니다.</p>
+      </div>
+      <ServiceCards />
+      <div class="center-actions">
+        <a class="btn" href="/contact/">교육 프로그램 문의하기</a>
+      </div>
+    </div>
+  </section>
+
+  {
+    recent.length > 0 && (
+      <section class="section" aria-labelledby="recent-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Lectures</span>
+            <h2 id="recent-title">최근 강의 이력</h2>
+          </div>
+          <LectureTable groups={recent} caption={`최근 진행한 과정 ${recent.length}건`} />
+          <a class="more-link" href="/lectures/">
+            전체 강의 이력 {formatNumber(stats.courseCount)}개 과정 보기 →
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    reviews.length > 0 && (
+      <section class="section" aria-labelledby="reviews-title">
+        <div class="wrap">
+          <div class="section-head">
+            <span class="eyebrow">Reviews</span>
+            <h2 id="reviews-title">고객 후기</h2>
+            <p>교육을 마친 뒤 받은 후기를 고치지 않고 그대로 옮겼습니다.</p>
+          </div>
+          {rating && (
+            <div class="rating">
+              <p class="rating-score">
+                <span class="rating-num">{rating.average.toFixed(1)}</span>{' '}
+                <span class="rating-max">/ 5.0</span>
+              </p>
+              <div class="rating-text">
+                <p class="rating-label">주강사 강의 만족도</p>
+                <p class="rating-basis">
+                  주강사로 진행한 강의 {rating.sessions}회(기업·기관 {rating.orgCount}곳)의 교육 후 만족도 설문
+                  평균입니다. 설문은 운영사 또는 자체적으로 실시했습니다.
+                </p>
+              </div>
+            </div>
+          )}
+          <ul class="reviews">
+            {reviewsShown.map((r) => (
+              <ReviewCard review={r} />
+            ))}
+          </ul>
+          {reviewsMore.length > 0 && (
+            <details class="more-reviews">
+              <summary>후기 {reviewsMore.length}개 더 보기</summary>
+              <ul class="reviews">
+                {reviewsMore.map((r) => (
+                  <ReviewCard review={r} />
+                ))}
+              </ul>
+            </details>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <ContactCta />
+</Base>
+
+<style>
+  .hero {
+    /* 경로 표시가 없으므로 그 높이만큼 더 띄워 하위 페이지의 첫 블록과 높이를 맞춘다 */
+    padding-block: calc(var(--crumbs-h) + var(--page-top)) clamp(48px, 7vw, 80px);
+    background:
+      radial-gradient(900px 420px at 85% 0%, rgb(47 69 196 / 0.08), transparent 70%),
+      radial-gradient(600px 320px at 0% 100%, rgb(222 170 90 / 0.08), transparent 70%);
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: clamp(32px, 5vw, 64px);
+    /* 소개 페이지와 같이 글 열을 위에 붙인다. 가운데 정렬이면 사진 높이만큼 글이 내려간다 */
+    align-items: start;
+  }
+  .hero-text {
+    display: grid;
+    gap: 20px;
+  }
+  .tagline {
+    display: grid;
+    font-size: clamp(30px, 4.6vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .tagline em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+  }
+  .h1-name {
+    font-size: clamp(22px, 2.6vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .h1-role {
+    font-size: clamp(14px, 1.6vw, 16px);
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0;
+  }
+  .lead {
+    font-size: clamp(17px, 2vw, 19px);
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .stats-wrap {
+    margin-top: clamp(40px, 6vw, 64px);
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .center-actions {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+  }
+  .rating {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 28px;
+    margin-bottom: 24px;
+    padding: 22px 28px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .rating p {
+    margin: 0;
+  }
+  .rating-score {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .rating-num {
+    font-size: clamp(40px, 5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .rating-max {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .rating-text {
+    flex: 1 1 280px;
+  }
+  .rating-label {
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .rating-basis {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .reviews {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 3 280px;
+    column-gap: 14px;
+  }
+  .more-reviews {
+    margin-top: 6px;
+  }
+  .more-reviews summary {
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--accent);
+    padding: 10px 0 18px;
+    list-style-position: inside;
+  }
+  @media (max-width: 860px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-photo {
+      max-width: 380px;
+      width: 100%;
+      margin-inline: auto;
+    }
+  }
+</style>

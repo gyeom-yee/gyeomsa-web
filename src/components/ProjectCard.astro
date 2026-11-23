@@ -1,0 +1,136 @@
+---
+// 프로젝트 경험 한 항목(PRD 3장 소개). 목록형: 왼쪽 열에 기간, 오른쪽에 제목·소속·역할, 그 아래 설명, 사용 기술, 증빙 링크.
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  headingLevel?: 'h2' | 'h3';
+}
+const { project, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+const { Content } = await render(project);
+const { title, period, affiliation, role, tags, links } = project.data;
+---
+
+<article class="project reveal" id={project.id}>
+  <p class="when">{period}</p>
+  <div class="main">
+    <div class="head">
+      <H class="title">{title}</H>
+      <p class="meta">
+        <span class="org">{affiliation}</span>{' '}
+        <span class="bar" aria-hidden="true"></span>{' '}
+        <span class="role">{role}</span>
+      </p>
+    </div>
+    <div class="body"><Content /></div>
+    {
+      tags.length > 0 && (
+        <ul class="tags" aria-label="사용 기술">
+          {tags.map((t) => (
+            <li class="tag">{t}</li>
+          ))}
+        </ul>
+      )
+    }
+    {
+      links.length > 0 && (
+        <ul class="links" aria-label="관련 링크">
+          {links.map((l) => (
+            <li>
+              <a href={l.url} rel="noopener">
+                {l.label}
+                <span aria-hidden="true"> ↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  /* 기간은 왼쪽 열, 내용은 오른쪽 열. 소개 페이지의 경력·학력·자격과 같은 배치 */
+  .project {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 4px 28px;
+    padding: clamp(22px, 3vw, 30px) 0;
+  }
+  .when {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    padding-top: 3px;
+  }
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .head {
+    display: grid;
+    gap: 4px;
+  }
+  .title {
+    font-size: clamp(18px, 2vw, 21px);
+  }
+  @media (max-width: 760px) {
+    .project {
+      grid-template-columns: 1fr;
+    }
+  }
+  .meta {
+    font-size: 14px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .meta > span {
+    white-space: nowrap;
+  }
+  .bar {
+    width: 1px;
+    height: 12px;
+    background: var(--line);
+  }
+  .org {
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .role {
+    color: var(--ink-2);
+  }
+  .body {
+    color: var(--ink-2);
+    font-size: 16px;
+    max-width: 78ch;
+  }
+  .body :global(p + p) {
+    margin-top: 0.8em;
+  }
+  .links {
+    list-style: none;
+    margin: 2px 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .links a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .links a:hover {
+    text-decoration: underline;
+  }
+</style>

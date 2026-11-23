@@ -1,0 +1,45 @@
+---
+import { site } from '../site.config.ts';
+---
+
+<section class="section cta" aria-labelledby="cta-title">
+  <div class="wrap box reveal">
+    <div>
+      <h2 id="cta-title">강의 문의</h2>
+      <p>대상 인원, 희망 일정, 다루고 싶은 주제를 이메일로 보내 주시면 맞춰서 제안드립니다.</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href="/contact/">강의 문의 방법 보기</a>{' '}
+      <a class="btn ghost" href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .box > div:first-child {
+    display: grid;
+    gap: 8px;
+    max-width: 560px;
+  }
+  h2 {
+    font-size: clamp(26px, 3.6vw, 36px);
+  }
+  p {
+    color: var(--ink-2);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .actions .ghost {
+    word-break: break-all;
+  }
+</style>
