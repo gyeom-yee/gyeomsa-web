@@ -52,7 +52,7 @@ flowchart LR
 - [Astro](https://astro.build/) 7 정적 출력 + TypeScript(strict), `@astrojs/sitemap`
 - Notion API(`@notionhq/client`), 빌드 시점에만 호출
 - 순수 CSS(Astro scoped style). 외부 CSS 프레임워크와 분석·추적 스크립트는 쓰지 않습니다
-- 글꼴: [Pretendard](https://github.com/orioncactus/pretendard) 1.3.9 공식 서브셋 woff2를 저장소에 두고 직접 내려줍니다(SIL OFL 1.1, `src/assets/fonts/pretendard/LICENSE.txt`)
+- 글꼴: [Pretendard](https://github.com/orioncactus/pretendard) 1.3.9 공식 서브셋 woff2를 저장소에 두고 직접 내려줍니다. 빌드 끝에 사이트에 쓰인 글자만 남겨 글꼴 용량을 약 1.3MB에서 약 250KB로 줄입니다(`src/integrations/subset-fonts.ts`, SIL OFL 1.1, `src/assets/fonts/pretendard/LICENSE.txt`)
 - 패키지 매니저 npm
 
 ## 시작하기
@@ -83,6 +83,7 @@ docs/            기획·가이드 문서
 src/content/     교육·프로젝트·후기·기업 목록·경력 원본
 src/assets/      프로필 사진, 글꼴(Pretendard)
 src/lib/notion/  Notion 호출과 공개 필드 필터
+src/integrations/  빌드 끝에 글꼴 용량 줄이기
 src/pages/       라우트(홈·소개·강의 이력·문의, llms.txt·robots.txt)
 scripts/         빌드 결과 공개 검사
 .githooks/       커밋 직전 검사

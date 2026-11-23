@@ -30,7 +30,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 - 이미지: `astro:assets`로 WebP 변환. `/profile.jpg`(JSON-LD용)와 `/og.png`는 빌드 때 `sharp`로 만든다
 - 콘텐츠: 강의 이력은 Notion API(`@notionhq/client`)로 빌드 시점에만 호출, 제공 교육·프로젝트 경험·고객 후기는 저장소의 마크다운 파일
 - 스타일: 순수 CSS(Astro scoped style)
-- 글꼴: Pretendard 1.3.9 공식 서브셋 woff2(400·500·600·700·800)를 `src/assets/fonts/pretendard/`에 두고 `global.css`의 `@font-face`로 내려준다. 새 굵기를 쓰면 파일과 `@font-face`를 함께 추가한다. 같은 폴더의 `LICENSE.txt`(SIL OFL)를 지우지 않는다
+- 글꼴: Pretendard 1.3.9 공식 서브셋 woff2(400·500·600·700·800)를 `src/assets/fonts/pretendard/`에 두고 `global.css`의 `@font-face`로 내려준다. 새 굵기를 쓰면 파일과 `@font-face`를 함께 추가한다. 같은 폴더의 `LICENSE.txt`(SIL OFL)를 지우지 않는다. 빌드 끝에 `src/integrations/subset-fonts.ts`(개발 의존성 `subset-font`)가 `dist/`의 글꼴 사본에서 사이트에 쓰인 글자만 남긴다(2026-11-23). 원본 파일은 줄이지 않는다
 - 패키지 매니저: npm
 - 도메인: gyeomsa.com
 - 호스팅: GitHub Pages(2026-11-23 결정). `.github/workflows/deploy.yml`이 빌드 → `check:dist` → 배포를 한다. Notion 토큰·DB ID는 저장소 Secrets에만 둔다. 주소 기준은 `https://gyeomsa.com/`, `www`는 GitHub Pages가 리디렉션한다
@@ -62,6 +62,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 │  ├─ content/clients.yaml  주요 교육 기업 목록(실명)
 │  ├─ content/profile.yaml  소개 페이지의 경력·학력·교육 이수·자격·기술
 │  ├─ lib/notion/     Notion 호출·변환 코드는 여기에만 둔다. audit.ts는 검사 스크립트 전용
+│  ├─ integrations/   Astro 통합. subset-fonts.ts는 빌드 끝에 글꼴에서 쓰인 글자만 남긴다
 │  └─ assets/         프로필 사진, 글꼴(fonts/pretendard/)
 ├─ public/            그대로 내보낼 정적 파일(favicon 등). robots.txt·llms.txt는 src/pages/에서 만든다
 ├─ .env               비밀값. 커밋 금지
