@@ -3,7 +3,7 @@
 검색엔진(SEO), 답변 영역(AEO), 생성형 AI(GEO)에 공통으로 적용하는 구현 규칙이다.
 `<head>` 태그, 구조화 데이터, URL, 크롤러용 파일을 만들거나 고칠 때 이 문서를 따른다.
 
-`{이름}`, `{도메인}`, `{한 줄 소개}`는 PRD 6장의 미정 사항이 정해지면 한 곳(사이트 설정 파일)에서 관리한다. 값이 없을 때 임의로 채우지 않는다.
+`{이름}`, `{도메인}`, `{한 줄 소개}`는 PRD 6장 확정 항목을 따르고 `src/site.config.ts` 한 곳에서 관리한다. 값이 없을 때 임의로 채우지 않는다.
 
 ## 1. 원칙
 
@@ -48,7 +48,7 @@
 - 소개 페이지만 `og:type`을 `profile`로 바꾼다.
 - `robots` 메타는 기본적으로 넣지 않는다. 404 페이지에만 `noindex`를 넣는다.
 - `keywords` 메타는 넣지 않는다. 구글이 쓰지 않는다.
-- 검색엔진 소유 확인 태그(`google-site-verification`, `naver-site-verification`, `msvalidate.01`)는 값이 생기면 공통 레이아웃에 넣는다.
+- 검색엔진 소유 확인 태그(`google-site-verification`, `naver-site-verification`, `msvalidate.01`)는 값이 생기면 공통 레이아웃에 넣는다. 값은 `src/site.config.ts`의 `verification`에만 적고, 빈 값이면 태그를 넣지 않는다.
 
 ### 3.2 길이와 작성법
 
@@ -290,9 +290,9 @@ AI가 답변에 가져다 쓰기 쉬운 형태로 쓴다.
 - [ ] JSON-LD가 [Schema Markup Validator](https://validator.schema.org/)에서 오류가 없는지
 
 ### 배포한 뒤
-- [ ] Google Search Console에 등록하고 sitemap 제출
-- [ ] Bing Webmaster Tools에 등록하고 sitemap 제출
-- [ ] 네이버 서치어드바이저에 등록하고 sitemap 제출
-- [ ] [Rich Results Test](https://search.google.com/test/rich-results)로 실제 주소 확인
-- [ ] 5.1의 봇 이름을 User-Agent로 넣어 실제 주소를 요청했을 때 정상 응답(200)이 오는지. 호스팅이 봇을 막고 있으면 여기서 드러난다
+- [x] Google Search Console에 등록하고 sitemap 제출(2026-11-23)
+- [x] Bing Webmaster Tools에 등록하고 sitemap 제출(2026-11-23)
+- [x] 네이버 서치어드바이저에 등록하고 sitemap 제출(2026-11-23. 소유 확인은 `naver-site-verification` 태그)
+- [x] [Rich Results Test](https://search.google.com/test/rich-results)로 실제 주소 확인(2026-11-23. `/about/`에서 탐색경로·프로필 페이지 유효. 홈은 리치 결과 대상 타입이 없어 "감지된 항목 없음"이 정상이고, Schema Markup Validator에서 오류·경고 0개)
+- [x] 5.1의 봇 이름을 User-Agent로 넣어 실제 주소를 요청했을 때 정상 응답(200)이 오는지. 호스팅이 봇을 막고 있으면 여기서 드러난다(2026-11-23. 8종 모두 200)
 - [ ] 이름으로 구글·네이버를 검색하고, AI 서비스 두세 곳에 이름을 물어 결과를 기록

@@ -49,6 +49,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 ├─ raw_reviews/       후기 원본 설문(엑셀). 깃 제외
 ├─ scripts/check-dist.ts  빌드 결과 공개 검사(npm run check:dist)
 ├─ .github/workflows/deploy.yml  GitHub Pages 배포(main push·매일 04:17 KST·수동 실행)
+├─ .githooks/pre-commit  커밋 직전 비공개 정보 검사(denylist.local은 깃 제외)
 ├─ src/
 │  ├─ site.config.ts  이름·한 줄 소개·이메일·외부 링크. 이 값들은 여기서만 적는다
 │  ├─ content.config.ts  콘텐츠 파일 형식 검사(필수 값)
@@ -62,7 +63,7 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 │  ├─ content/profile.yaml  소개 페이지의 경력·학력·교육 이수·자격·기술
 │  ├─ lib/notion/     Notion 호출·변환 코드는 여기에만 둔다. audit.ts는 검사 스크립트 전용
 │  └─ assets/         프로필 사진, 글꼴(fonts/pretendard/)
-├─ public/            robots.txt 등 정적 파일
+├─ public/            그대로 내보낼 정적 파일(favicon 등). robots.txt·llms.txt는 src/pages/에서 만든다
 ├─ .env               비밀값. 커밋 금지
 └─ .env.example       변수 이름만 적은 견본
 ```
