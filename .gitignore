@@ -43,5 +43,6 @@ desktop.ini
 .idea/
 *.swp
 
-# Claude Code 개인 설정
+# Claude Code 설정. 저장소에 올리지 않는다
+.claude/settings.json
 .claude/settings.local.json
