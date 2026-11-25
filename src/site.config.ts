@@ -3,7 +3,7 @@
 
 export const site = {
   name: '김윤겸',
-  nameEn: 'Yun-gyeom Kim',
+  nameEn: 'YUNGYEOM KIM',
   domain: 'gyeomsa.com',
   url: 'https://gyeomsa.com',
   jobTitle: '기업 AX 교육 강사',
@@ -44,9 +44,7 @@ export const site = {
     'RAG',
   ],
   /** 소개 페이지 JSON-LD dateModified. 빌드 날짜가 아니라 소개 내용이 바뀐 날짜를 적는다 */
-  profileModified: '2026-11-20',
-  /** 이력서 PDF. public/ 아래 경로. 파일이 없으면 버튼이 비활성으로 나온다 */
-  resumePath: '/kim-yungyeom-resume.pdf',
+  profileModified: '2026-11-25',
 } as const;
 
 export const nav = [

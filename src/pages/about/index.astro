@@ -1,6 +1,4 @@
 ---
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import Base from '../../layouts/Base.astro';
 import ProfilePhotos from '../../components/ProfilePhotos.astro';
 import ClientCloud from '../../components/ClientCloud.astro';
@@ -16,8 +14,8 @@ const stats = await getLectureStats();
 const services = await getServices();
 // 프로젝트 경험(2026-11-20: 별도 페이지를 없애고 소개 페이지의 이력으로 옮김). 최신순.
 const projects = await getProjects();
-// 이력서 PDF가 없으면 버튼을 비활성으로 둔다(PRD 3장 소개).
-const hasResume = existsSync(join(process.cwd(), 'public', site.resumePath));
+// 이력서는 사이트에 올리지 않고 문의 메일로 요청받아 보낸다(2026-11-25 결정, PRD 3장 소개). 안내는 문의 페이지에 있다.
+// 비공개 정보가 들어 있어 public/에 두면 사이트와 공개 저장소에 그대로 나간다.
 // 다루는 기술은 profile.yaml의 skills에서만 읽는다(묶음별 목록).
 const { career, education, training, certifications, skills } = getProfile();
 // 학력과 교육 이수는 "학력 및 교육 이수" 한 목록으로 보여 준다(학력 먼저). 항목마다 제목·기간·보조 줄·설명.
@@ -50,18 +48,7 @@ for (const c of career) {
       <p class="motto">{site.motto}</p>
       <p class="lead">{site.introBody} {site.story}</p>
       <div class="actions">
-        {
-          hasResume ? (
-            <a class="btn" href={site.resumePath} download>
-              이력서 PDF 내려받기
-            </a>
-          ) : (
-            <span class="btn" aria-disabled="true">
-              이력서 준비 중
-            </span>
-          )
-        }{' '}
-        <a class="btn ghost" href="/contact/">강의 문의하기</a>
+        <a class="btn" href="/contact/">강의 문의하기</a>
         <a class="icon-btn" href={site.links.linkedin} rel="me noopener" aria-label="LinkedIn 프로필" title="LinkedIn">
           <Icon name="linkedin" />
         </a>

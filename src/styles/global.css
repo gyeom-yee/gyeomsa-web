@@ -191,14 +191,6 @@ p {
   background: var(--accent-soft);
   box-shadow: none;
 }
-.btn[aria-disabled='true'] {
-  background: var(--line);
-  border-color: var(--line);
-  color: var(--muted);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
 
 .more-link {
   display: inline-flex;

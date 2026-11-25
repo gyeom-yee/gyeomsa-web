@@ -1,6 +1,6 @@
 # gyeomsa-web
 
-기업 AX 교육 강사 김윤겸(Yun-gyeom Kim)의 개인 홈페이지 소스입니다. 배포 주소는 [gyeomsa.com](https://gyeomsa.com)입니다.
+기업 AX 교육 강사 김윤겸(YUNGYEOM KIM)의 개인 홈페이지 소스입니다. 배포 주소는 [gyeomsa.com](https://gyeomsa.com)입니다.
 
 목표는 두 가지입니다. 이름으로 검색했을 때 이 사이트가 가장 먼저 나오는 것, 그리고 ChatGPT·Perplexity·Gemini·Claude 같은 AI가 이 사람을 설명할 때 이 사이트를 근거로 인용하는 것입니다(SEO·AEO·GEO). 그래서 사람이 보기 좋은 화면만큼 크롤러가 읽기 쉬운 HTML을 요구사항으로 다룹니다.
 
