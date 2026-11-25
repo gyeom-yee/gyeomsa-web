@@ -11,8 +11,10 @@ for f in $staged; do
   case "$f" in
     .env|.env.*)
       [ "$f" = ".env.example" ] || { echo "차단: $f (비밀값 파일)"; fail=1; } ;;
-    raw_reviews/*|naming/*|references/*|.notion-cache/*|raw_*/*)
+    raw_reviews/*|naming/*|references/*|.notion-cache/*|raw_*/*|*resumes/*)
       echo "차단: $f (저장소 제외 폴더)"; fail=1 ;;
+    public/*resume*|*public/*resume*)
+      echo "차단: $f (이력서는 사이트에 올리지 않고 문의 메일로 요청받아 보낸다)"; fail=1 ;;
   esac
 done
 

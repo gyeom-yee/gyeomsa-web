@@ -43,7 +43,8 @@ PRD의 "미정 사항"에 걸린 값은 추측해서 채우지 않는다.
 ├─ README.md          저장소 소개. GitHub 방문자용
 ├─ docs/              기획·가이드 문서. 규칙 파일 외의 문서는 전부 여기
 │  ├─ PRD.md
-│  └─ SEO-GUIDE.md
+│  ├─ SEO-GUIDE.md
+│  └─ resumes/       비공개 이력서(docx·pdf). 깃 제외. 사용자가 이력서 작업을 요청할 때만 연다
 ├─ naming/            작명 메모(NAMING.md, 후보 CSV). 기획과 무관, 깃 제외
 ├─ references/        참고용으로 저장한 외부 사이트. 기획과 무관, 깃 제외
 ├─ raw_reviews/       후기 원본 설문(엑셀). 깃 제외
@@ -121,7 +122,8 @@ npm run check:dist 빌드 뒤 dist/에 Notion 내부 값·토큰이 없는지 �
 - 예외: `profile.yaml` 경력 항목의 소속 회사명(`career.org`)은 `교육기관` 값과 같아도 실명으로 적는다(2026-11-18 결정). 강의 이력 표와 그 밖의 곳에는 여전히 운영사를 싣지 않는다.
 - Notion 응답을 파일로 저장하지 않는다. 캐시가 꼭 필요하면 `.notion-cache/`에만 두고, 이 폴더는 `.gitignore`에 있어야 한다.
 - 빌드에 필요한 파일(`src/content/` 등)은 `.gitignore`로 숨기지 않는다. 호스팅이 저장소에서 빌드하므로 빌드가 깨진다. 숨겨야 하는 내용은 처음부터 저장소에 두지 않는다.
-- 커밋 전에 `git status`로 `.env`, `naming/`, `references/`, `raw_reviews/`, `.notion-cache/`가 빠졌는지 확인한다.
+- 커밋 전에 `git status`로 `.env`, `naming/`, `references/`, `raw_reviews/`, `docs/resumes/`, `.notion-cache/`가 빠졌는지 확인한다.
+- 이력서 파일은 `public/`을 포함해 저장소 어디에도 두지 않는다. 전화번호와 기업별 실적이 들어 있다. 내려받기 버튼을 만들지 않고, 이력서는 문의 메일로 요청받아 보낸다(2026-11-25 결정).
 - `.githooks/pre-commit`이 커밋 직전에 제외 폴더, Notion 토큰 형식, `.env`의 실제 값, `.githooks/denylist.local`(비공개 단어 목록, 깃 제외)을 검사한다. `git init` 직후 `git config core.hooksPath .githooks`로 연결한다. 검사를 건너뛰는 `--no-verify`를 쓰지 않는다.
 - 저장소 이름은 `gyeomsa-web`(GitHub `gyeom-yee` 계정, 공개).
 - 이메일 주소, 실명 기업 목록, 프로필 사진처럼 사이트에 이미 공개하는 정보는 저장소에 있어도 된다.
